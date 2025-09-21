@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.DishMapper">
+    <update id="update">
+        update dish
+        <set>
+            <!-- 菜品名称 -->
+            <if test="name != null">name = #{name},</if>
+            <!-- 分类ID -->
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <!-- 菜品价格 -->
+            <if test="price != null">price = #{price},</if>
+            <!-- 菜品图片 -->
+            <if test="image != null">image = #{image},</if>
+            <!-- 菜品描述 -->
+            <if test="description != null">description = #{description},</if>
+            <!-- 菜品状态（起售/停售） -->
+            <if test="status != null">status = #{status},</if>
+            <!-- 更新时间（若需要手动传递时间，可加此条件；若用自动填充，可省略） -->
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateUser != null">update_user = #{updateUser},</if>
+        </set>
+        where id = #{id}
+    </update>
+    <delete id="deleteBatch">
+        delete from dish where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="dishPageQuery" resultType="com.sky.vo.DishVO">
+        select dish.*, category.name as categoryName from dish,category where dish.category_id = category.id
+
+            <if test="name != null and name != ''">
+                and dish.name like concat ('%',#{name},'%')
+            </if>
+            <if test="categoryId != null">
+                and dish.category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                and dish.status = #{status}
+            </if>
+
+        order by dish.update_time desc
+    </select>
+</mapper>
