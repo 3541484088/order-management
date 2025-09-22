@@ -45,4 +45,14 @@
 
         order by dish.update_time desc
     </select>
+    <select id="dishList" resultType="com.sky.entity.Dish">
+        select * from dish <where>
+                <if test="categoryId != null">
+                    category_id = #{categoryId}
+                </if>
+        <if test="status != null">
+            and status = #{status}
+        </if>
+    </where>
+    </select>
 </mapper>
