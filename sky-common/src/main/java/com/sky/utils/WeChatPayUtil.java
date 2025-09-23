@@ -1,6 +1,5 @@
 package com.sky.utils;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.sky.properties.WeChatProperties;
 import com.wechat.pay.contrib.apache.httpclient.WechatPayHttpClientBuilder;
@@ -154,8 +153,58 @@ public class WeChatPayUtil {
         return post(JSAPI, body);
     }
 
+//    /**
+//     * 小程序支付
+//     *
+//     * @param orderNum    商户订单号
+//     * @param total       金额，单位 元
+//     * @param description 商品描述
+//     * @param openid      微信用户的openid
+//     * @return
+//     */
+//    public JSONObject pay(String orderNum, BigDecimal total, String description, String openid) throws Exception {
+//        //统一下单，生成预支付交易单
+//        String bodyAsString = jsapi(orderNum, total, description, openid);
+//        //解析返回结果
+//        JSONObject jsonObject = JSON.parseObject(bodyAsString);
+//        System.out.println(jsonObject);
+//
+//        String prepayId = jsonObject.getString("prepay_id");
+//        if (prepayId != null) {
+//            String timeStamp = String.valueOf(System.currentTimeMillis() / 1000);
+//            String nonceStr = RandomStringUtils.randomNumeric(32);
+//            ArrayList<Object> list = new ArrayList<>();
+//            list.add(weChatProperties.getAppid());
+//            list.add(timeStamp);
+//            list.add(nonceStr);
+//            list.add("prepay_id=" + prepayId);
+//            //二次签名，调起支付需要重新签名
+//            StringBuilder stringBuilder = new StringBuilder();
+//            for (Object o : list) {
+//                stringBuilder.append(o).append("\n");
+//            }
+//            String signMessage = stringBuilder.toString();
+//            byte[] message = signMessage.getBytes();
+//
+//            Signature signature = Signature.getInstance("SHA256withRSA");
+//            signature.initSign(PemUtil.loadPrivateKey(new FileInputStream(new File(weChatProperties.getPrivateKeyFilePath()))));
+//            signature.update(message);
+//            String packageSign = Base64.getEncoder().encodeToString(signature.sign());
+//
+//            //构造数据给微信小程序，用于调起微信支付
+//            JSONObject jo = new JSONObject();
+//            jo.put("timeStamp", timeStamp);
+//            jo.put("nonceStr", nonceStr);
+//            jo.put("package", "prepay_id=" + prepayId);
+//            jo.put("signType", "RSA");
+//            jo.put("paySign", packageSign);
+//
+//            return jo;
+//        }
+//        return jsonObject;
+//    }
     /**
-     * 小程序支付
+     * 小程序支付 - 模拟版本
      *
      * @param orderNum    商户订单号
      * @param total       金额，单位 元
@@ -164,45 +213,39 @@ public class WeChatPayUtil {
      * @return
      */
     public JSONObject pay(String orderNum, BigDecimal total, String description, String openid) throws Exception {
-        //统一下单，生成预支付交易单
-        String bodyAsString = jsapi(orderNum, total, description, openid);
-        //解析返回结果
-        JSONObject jsonObject = JSON.parseObject(bodyAsString);
-        System.out.println(jsonObject);
+        // 模拟支付成功，直接构造返回结果
+        String timeStamp = String.valueOf(System.currentTimeMillis() / 1000);
+        String nonceStr = RandomStringUtils.randomNumeric(32);
+        String prepayId = "wx12345678901234567890123456789012";
 
-        String prepayId = jsonObject.getString("prepay_id");
-        if (prepayId != null) {
-            String timeStamp = String.valueOf(System.currentTimeMillis() / 1000);
-            String nonceStr = RandomStringUtils.randomNumeric(32);
-            ArrayList<Object> list = new ArrayList<>();
-            list.add(weChatProperties.getAppid());
-            list.add(timeStamp);
-            list.add(nonceStr);
-            list.add("prepay_id=" + prepayId);
-            //二次签名，调起支付需要重新签名
-            StringBuilder stringBuilder = new StringBuilder();
-            for (Object o : list) {
-                stringBuilder.append(o).append("\n");
-            }
-            String signMessage = stringBuilder.toString();
-            byte[] message = signMessage.getBytes();
+        // 构造签名数据
+        ArrayList<Object> list = new ArrayList<>();
+        list.add(weChatProperties.getAppid());
+        list.add(timeStamp);
+        list.add(nonceStr);
+        list.add("prepay_id=" + prepayId);
 
-            Signature signature = Signature.getInstance("SHA256withRSA");
-            signature.initSign(PemUtil.loadPrivateKey(new FileInputStream(new File(weChatProperties.getPrivateKeyFilePath()))));
-            signature.update(message);
-            String packageSign = Base64.getEncoder().encodeToString(signature.sign());
-
-            //构造数据给微信小程序，用于调起微信支付
-            JSONObject jo = new JSONObject();
-            jo.put("timeStamp", timeStamp);
-            jo.put("nonceStr", nonceStr);
-            jo.put("package", "prepay_id=" + prepayId);
-            jo.put("signType", "RSA");
-            jo.put("paySign", packageSign);
-
-            return jo;
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Object o : list) {
+            stringBuilder.append(o).append("\n");
         }
-        return jsonObject;
+        String signMessage = stringBuilder.toString();
+        byte[] message = signMessage.getBytes();
+
+        Signature signature = Signature.getInstance("SHA256withRSA");
+        signature.initSign(PemUtil.loadPrivateKey(new FileInputStream(new File(weChatProperties.getPrivateKeyFilePath()))));
+        signature.update(message);
+        String packageSign = Base64.getEncoder().encodeToString(signature.sign());
+
+        // 构造返回给前端的数据
+        JSONObject jo = new JSONObject();
+        jo.put("timeStamp", timeStamp);
+        jo.put("nonceStr", nonceStr);
+        jo.put("package", "prepay_id=" + prepayId);
+        jo.put("signType", "RSA");
+        jo.put("paySign", packageSign);
+
+        return jo;
     }
 
     /**
