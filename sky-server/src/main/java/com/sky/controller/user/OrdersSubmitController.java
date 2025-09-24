@@ -88,5 +88,13 @@ public class OrdersSubmitController {
         return  Result.success();
     }
 
+    /**
+     * 用户催单
+     */
+    @GetMapping("/reminder/{id}")
+    public Result reminder(@PathVariable("id") Long id) {
+        ordersSubmitService.reminder(id);
+        return Result.success();
+    }
 
 }
