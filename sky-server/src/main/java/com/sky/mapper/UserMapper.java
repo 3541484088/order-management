@@ -15,7 +15,7 @@ public interface UserMapper {
      * @param openid
      * @return
      */
-    @Select("select * from user where openid = #{openid}")
+    @Select("select * from user where openid = #{openid} limit 1")
     User selectByOpenid(String openid);
 
     /**
