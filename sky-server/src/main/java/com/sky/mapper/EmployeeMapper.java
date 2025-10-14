@@ -1,5 +1,6 @@
 package com.sky.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.github.pagehelper.Page;
 import com.sky.anno.AutoFill;
 import com.sky.entity.Employee;
@@ -9,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
 @Mapper
-public interface EmployeeMapper {
+public interface EmployeeMapper extends BaseMapper<Employee> {
 
     /**
      * 根据用户名查询员工

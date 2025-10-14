@@ -1,8 +1,10 @@
 package com.sky.service.impl;
 
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sky.constant.StatusConstant;
+import com.sky.context.BaseContext;
 import com.sky.dto.CategoryDTO;
 import com.sky.dto.CategoryPageQueryDTO;
 import com.sky.entity.Category;
@@ -16,6 +18,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -36,7 +39,11 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = new Category();
         BeanUtils.copyProperties(categoryDTO,category);
         category.setStatus(StatusConstant.DISABLE);
-        categoryMapper.insertCategory(category);
+        category.setCreateTime(LocalDateTime.now());
+        category.setUpdateTime(LocalDateTime.now());
+        category.setCreateUser(BaseContext.getCurrentId());
+        category.setUpdateUser(BaseContext.getCurrentId());
+        categoryMapper.insert(category);
     }
 
     /**
@@ -46,9 +53,16 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public PageResult categoryPageQuery(CategoryPageQueryDTO categoryPageQueryDTO) {
-        PageHelper.startPage(categoryPageQueryDTO.getPage(),categoryPageQueryDTO.getPageSize());
-        Page<Category> categoryList = categoryMapper.categoryPageQuery(categoryPageQueryDTO);
-        return new PageResult(categoryList.getTotal(),categoryList);
+//        PageHelper.startPage(categoryPageQueryDTO.getPage(),categoryPageQueryDTO.getPageSize());
+//        Page<Category> categoryList = categoryMapper.categoryPageQuery(categoryPageQueryDTO);
+//        return new PageResult(categoryList.getTotal(),categoryList);
+
+        Page< Category> page = Page.of(categoryPageQueryDTO.getPage(),categoryPageQueryDTO.getPageSize());
+        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(StringUtils.isNotEmpty(categoryPageQueryDTO.getName()), Category::getName, categoryPageQueryDTO.getName())
+                .eq(categoryPageQueryDTO.getType() != null, Category::getType, categoryPageQueryDTO.getType()).orderByAsc(Category::getSort);
+        Page<Category> pageResult = categoryMapper.selectPage(page,queryWrapper);
+        return new PageResult(pageResult.getTotal(),pageResult.getRecords());
     }
 
     /**
@@ -65,7 +79,7 @@ public class CategoryServiceImpl implements CategoryService {
         if(count > 0){
             throw new DeletionNotAllowedException("当前分类下关联了套餐，不能删除");
         }
-        categoryMapper.deleteById(id);
+        categoryMapper.deleteById( id);
     }
 
     /**
@@ -76,7 +90,9 @@ public class CategoryServiceImpl implements CategoryService {
     public void update(CategoryDTO categoryDTO) {
         Category category = new Category();
         BeanUtils.copyProperties(categoryDTO,category);
-        categoryMapper.update(category);
+        category.setUpdateTime(LocalDateTime.now());
+        category.setUpdateUser(BaseContext.getCurrentId());
+        categoryMapper.updateById(category);
     }
 
     /**
@@ -89,8 +105,10 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = Category.builder()
                 .id(id)
                 .status(status)
+                .updateTime(LocalDateTime.now())
+                .updateUser(BaseContext.getCurrentId())
                 .build();
-                categoryMapper.update(category);
+                categoryMapper.updateById(category);
     }
 
     /**
@@ -100,7 +118,9 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public List<Category> list(Integer type) {
-        return categoryMapper.list(type);
+        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Category::getType,type);
+        return categoryMapper.selectList(queryWrapper);
     }
 
 }

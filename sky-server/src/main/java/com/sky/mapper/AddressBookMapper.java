@@ -2,6 +2,8 @@ package com.sky.mapper;
 
 import com.sky.entity.AddressBook;
 import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 @Mapper
@@ -12,7 +14,7 @@ public interface AddressBookMapper {
      * @param addressBook
      * @return
      */
-    List<AddressBook> list(AddressBook addressBook);
+    List<AddressBook> list(@Param("addressBook") AddressBook addressBook);
 
     /**
      * 新增

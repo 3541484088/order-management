@@ -1,51 +1,44 @@
 package com.sky.mapper;
 
-import com.github.pagehelper.Page;
-import com.sky.anno.AutoFill;
-import com.sky.dto.CategoryPageQueryDTO;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.sky.entity.Category;
-import com.sky.enumeration.OperationType;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
-
 @Mapper
-public interface CategoryMapper {
+public interface CategoryMapper extends BaseMapper<Category> {
     /**
      * 新增分类
      * @param category
      */
-    @AutoFill(OperationType.INSERT)
-    @Insert("insert into category (type, name, sort,status, create_time, update_time, create_user, update_user) values (#{type}, #{name}, #{sort},#{status},#{createTime}, #{updateTime}, #{createUser}, #{updateUser})")
-    void insertCategory(Category category);
+//    @AutoFill(OperationType.INSERT)
+//    @Insert("insert into category (type, name, sort,status, create_time, update_time, create_user, update_user) values (#{type}, #{name}, #{sort},#{status},#{createTime}, #{updateTime}, #{createUser}, #{updateUser})")
+//    void insertCategory(Category category);
 
     /**
      * 分类分页查询
      * @param categoryPageQueryDTO
      * @return
      */
-    Page<Category> categoryPageQuery(CategoryPageQueryDTO categoryPageQueryDTO);
+//    Page<Category> categoryPageQuery(CategoryPageQueryDTO categoryPageQueryDTO);
 
     /**
      * 根据id删除分类
      * @param id
      */
-    @Delete("delete from category where id = #{id}")
-    void deleteById(Long id);
+//    @Delete("delete from category where id = #{id}")
+//    void deleteById(Long id);
 
     /**
      * 修改分类
      * @param category
      */
-    @AutoFill(OperationType.UPDATE)
-    void update(Category category);
+//    @AutoFill(OperationType.UPDATE)
+//    void update(Category category);
 
     /**
      * 查询分类
      * @param type
      * @return
      */
-    List<Category> list(Integer type);
+//    List<Category> list(Integer type);
 }

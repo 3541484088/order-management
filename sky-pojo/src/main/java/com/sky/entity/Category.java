@@ -1,11 +1,15 @@
 package com.sky.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
 
 @Data
 @Builder
@@ -15,6 +19,7 @@ public class Category implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     //类型: 1菜品分类 2套餐分类
@@ -30,9 +35,11 @@ public class Category implements Serializable {
     private Integer status;
 
     //创建时间
+
     private LocalDateTime createTime;
 
     //更新时间
+
     private LocalDateTime updateTime;
 
     //创建人
